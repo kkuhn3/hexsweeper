@@ -130,14 +130,43 @@ function revealCell(div) {
         }
         else {
             let count = 0;
+            let flags = 0;
             for (let neighbor of getNeighbors(div)) {
                 if (neighbor.classList.contains("bomb")) {
                     count = count + 1;
+                }
+                if (neighbor.classList.contains("flag")) {
+                    flags = flags + 1;
                 }
             }
             div.classList.add("_" + count);
             if (count === 0) {
                 revealAllCells(div);
+            }
+            // Death Flags
+            if (flags === count) {
+                revealAllCells(div);
+            }
+            // Can't Count
+            for (let neighbor of getNeighbors(div)) {
+                if (!neighbor.classList.contains("unrevealed")) {
+                    let cantCount = 0;
+                    for (let nextNeighbor of getNeighbors(neighbor)) {
+                        if (nextNeighbor.classList.contains("bomb")) {
+                            cantCount = cantCount + 1;
+                        }
+                        if (nextNeighbor.classList.contains("unrevealed")) {
+                            cantCount = cantCount - 1;
+                        }
+                    }
+                    if (cantCount === 0) {
+                        for (let nextNeighbor of getNeighbors(neighbor)) {
+                            if (nextNeighbor.classList.contains("unrevealed") && !nextNeighbor.classList.contains("flag")) {
+                                flagCell(nextNeighbor);
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -145,8 +174,22 @@ function revealCell(div) {
 
 function revealAllCells(div) {
     if (!div.classList.contains("unrevealed")) {
+        let count = 0;
         for (let neighbor of getNeighbors(div)) {
-            revealCell(neighbor);
+            if (neighbor.classList.contains("bomb")) {
+                count = count + 1;
+            }
+            if (neighbor.classList.contains("flag")) {
+                count = count - 1;
+            }
+            if (neighbor.classList.contains("unrevealed") && neighbor.classList.contains("_0")) {
+                neighbor.classList.remove("_0");
+            }
+        }
+        if (count === 0) {
+            for (let neighbor of getNeighbors(div)) {
+                revealCell(neighbor);
+            }
         }
     }
     else {
@@ -168,6 +211,23 @@ function flagCell(div) {
         }
         else {
             div.classList.add("flag");
+            // Death Flags
+            for (let neighbor of getNeighbors(div)) {
+                if (!neighbor.classList.contains("unrevealed")) {
+                    let count = 0;
+                    for (let nextNeighbor of getNeighbors(neighbor)) {
+                        if (nextNeighbor.classList.contains("bomb")) {
+                            count = count + 1;
+                        }
+                        if (nextNeighbor.classList.contains("flag")) {
+                            count = count - 1;
+                        }
+                    }
+                    if (count === 0) {
+                        revealAllCells(neighbor);
+                    }
+                }
+            }
         }
     }
 }
