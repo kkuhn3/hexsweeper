@@ -1,0 +1,37 @@
+body {
+    display: block;
+    margin-left: .5dvw;
+    margin-right: .5dvw;
+    margin-top: .5dvh;
+    margin-bottom: .5dvh;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(30, 1fr);
+    grid-template-rows: repeat(16, 1fr);
+    background-color: #ccc;
+    max-width: 99dvw;
+    max-height: 99dvh;
+    gap: 0;
+}
+.cell {
+    aspect-ratio : 1 / 1;
+    cursor: pointer;
+    background-size: cover;
+}
+
+.bomb {background-image: url(./images/bomb.png);}
+.unrevealed {background-image: url(./images/unrevealed.png);}
+._0 {background-image: url(./images/zero.png);}
+._1 {background-image: url(./images/one.png);}
+._2 {background-image: url(./images/two.png);}
+._3 {background-image: url(./images/three.png);}
+._4 {background-image: url(./images/four.png);}
+._5 {background-image: url(./images/five.png);}
+._6 {background-image: url(./images/six.png);}
+._7 {background-image: url(./images/seven.png);}
+._8 {background-image: url(./images/eight.png);}
+.flag {background-image: url(./images/flag.png);}
+.boom {background-image: url(./images/boom.png);}
+.misflagged {background-image: url(./images/flag.png);}
