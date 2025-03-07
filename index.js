@@ -1,8 +1,17 @@
 const WIDTH = 30;
 const HEIGHT = 16;
 let GAMESTARTED = false;
+let livestotal = 3;
+let livesleft = 3;
+let flagsleft = 99;
+let revealsleft = WIDTH * HEIGHT - flagsleft;
 
 function loadDivs() {
+    GAMESTARTED = false;
+    grid.innerHTML = "";
+    lifes.innerHTML = "💖💖💖";
+    flags.innerHTML = "🚩 99";
+    results.innerHTML = "";
     for (let i = 0; i < HEIGHT; i++) {
         for (let j = 0; j < WIDTH; j++) {
             const div = document.createElement("div");
@@ -87,10 +96,14 @@ function mouseEnter(div, e) {
 }
 
 function startGame(div) {
+    setFlagsLeft(99);
+    setLivesLeft(3);
+    revealsleft = WIDTH * HEIGHT - flagsleft;
+
     const x = div.id.split("-")[1];
     const y = div.id.split("-")[2];
     GAMESTARTED = true;
-    let bombs = 99;
+    let bombs = flagsleft;
     while (bombs > 0) {
         const randomX = Math.floor(Math.random() * WIDTH);
         const randomY = Math.floor(Math.random() * HEIGHT);
@@ -103,6 +116,27 @@ function startGame(div) {
             bombs--;
         }
     }
+}
+function setLivesLeft(num) {
+    livesleft = num;
+    lifes.innerHTML = "";
+    if (livesleft > 3) {
+        lifes.innerHTML += "" + livesleft + "x💖";
+    }
+    else {
+        for (let i = 0; i < 3; i++) {
+            if (i < livesleft) {
+                lifes.innerHTML += "💖";
+            }
+            else {
+                lifes.innerHTML += "💔";
+            }
+        }
+    }
+}
+function setFlagsLeft(num) {
+    flagsleft = num;
+    flags.innerHTML = "🚩 " + flagsleft;
 }
 
 function getNeighbors(div) {
@@ -123,46 +157,69 @@ function getNeighbors(div) {
 
 function revealCell(div) {
     if (div.classList.contains("unrevealed") && !div.classList.contains("flag")) {
-        div.classList.remove("unrevealed");
         if (div.classList.contains("bomb")) {
             div.classList.add("boom");
-            revealAll();
+            flagCell(div);
+            setLivesLeft(livesleft - 1);
+            if (livesleft < 1) {
+                results.innerHTML = "Exploded!";
+                revealAll();
+            }
         }
         else {
-            let count = 0;
-            let flags = 0;
-            for (let neighbor of getNeighbors(div)) {
-                if (neighbor.classList.contains("bomb")) {
-                    count = count + 1;
+            revealsleft = revealsleft - 1;
+            if (revealsleft === 0) {
+                results.innerHTML = "Victory!";
+                revealAll();
+            }
+            else {
+                div.classList.remove("unrevealed");
+                let count = 0;
+                let flags = 0;
+                let unrevealedNeighbors = 0;
+                for (let neighbor of getNeighbors(div)) {
+                    if (neighbor.classList.contains("bomb")) {
+                        count = count + 1;
+                    }
+                    if (neighbor.classList.contains("flag")) {
+                        flags = flags + 1;
+                    }
+                    if (neighbor.classList.contains("unrevealed")) {
+                        unrevealedNeighbors = unrevealedNeighbors + 1;
+                    }
                 }
-                if (neighbor.classList.contains("flag")) {
-                    flags = flags + 1;
+                div.classList.add("_" + count);
+                if (count === 0) {
+                    revealAllCells(div);
                 }
-            }
-            div.classList.add("_" + count);
-            if (count === 0) {
-                revealAllCells(div);
-            }
-            // Death Flags
-            if (flags === count) {
-                revealAllCells(div);
-            }
-            // Can't Count
-            for (let neighbor of getNeighbors(div)) {
-                if (!neighbor.classList.contains("unrevealed")) {
-                    let cantCount = 0;
-                    for (let nextNeighbor of getNeighbors(neighbor)) {
-                        if (nextNeighbor.classList.contains("bomb")) {
-                            cantCount = cantCount + 1;
-                        }
-                        if (nextNeighbor.classList.contains("unrevealed")) {
-                            cantCount = cantCount - 1;
+                // Death Flags
+                if (flags === count) {
+                    revealAllCells(div);
+                }
+                // Can't Count
+                if (count === unrevealedNeighbors) {
+                    for (let neighbor of getNeighbors(div)) {
+                        if (neighbor.classList.contains("unrevealed") && !neighbor.classList.contains("flag")) {
+                            flagCell(neighbor);
                         }
                     }
-                    if (cantCount === 0) {
+                }
+                for (let neighbor of getNeighbors(div)) {
+                    if (!neighbor.classList.contains("unrevealed")) {
+                        let cantCount = 0;
                         for (let nextNeighbor of getNeighbors(neighbor)) {
-                            if (nextNeighbor.classList.contains("unrevealed") && !nextNeighbor.classList.contains("flag")) {
-                                flagCell(nextNeighbor);
+                            if (nextNeighbor.classList.contains("bomb")) {
+                                cantCount = cantCount + 1;
+                            }
+                            if (nextNeighbor.classList.contains("unrevealed")) {
+                                cantCount = cantCount - 1;
+                            }
+                        }
+                        if (cantCount === 0) {
+                            for (let nextNeighbor of getNeighbors(neighbor)) {
+                                if (nextNeighbor.classList.contains("unrevealed") && !nextNeighbor.classList.contains("flag")) {
+                                    flagCell(nextNeighbor);
+                                }
                             }
                         }
                     }
@@ -208,9 +265,11 @@ function flagCell(div) {
     if (div.classList.contains("unrevealed")) {
         if (div.classList.contains("flag")) {
             div.classList.remove("flag");
+            setFlagsLeft(flagsleft + 1);
         }
         else {
             div.classList.add("flag");
+            setFlagsLeft(flagsleft - 1);
             // Death Flags
             for (let neighbor of getNeighbors(div)) {
                 if (!neighbor.classList.contains("unrevealed")) {
@@ -238,6 +297,21 @@ function revealAll() {
             div.classList.add("misflagged");
         }
         else if (div.classList.contains("bomb") && !div.classList.contains("boom")) {
+            if (revealsleft === 0) {
+                div.classList.add("flag");
+            }
+            else {
+                div.classList.remove("unrevealed");
+            }
+        }
+        else if (div.classList.contains("unrevealed")) {
+            let count = 0;
+            for (let neighbor of getNeighbors(div)) {
+                if (neighbor.classList.contains("bomb")) {
+                    count = count + 1;
+                }
+            }
+            div.classList.add("_" + count);
             div.classList.remove("unrevealed");
         }
     }

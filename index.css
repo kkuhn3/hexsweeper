@@ -1,7 +1,10 @@
+html {
+    user-select: none;
+}
 body {
     display: block;
-    margin-left: .5dvw;
-    margin-right: .5dvw;
+    margin-left: 10dvw;
+    margin-right: 10dvw;
     margin-top: .5dvh;
     margin-bottom: .5dvh;
 }
@@ -11,9 +14,11 @@ body {
     grid-template-columns: repeat(30, 1fr);
     grid-template-rows: repeat(16, 1fr);
     background-color: #ccc;
-    max-width: 99dvw;
+    max-width: 80dvw;
     max-height: 99dvh;
     gap: 0;
+    border: 5px black;
+    border-style: solid;
 }
 .cell {
     aspect-ratio : 1 / 1;
@@ -35,3 +40,29 @@ body {
 .flag {background-image: url(./images/flag.png);}
 .boom {background-image: url(./images/boom.png);}
 .misflagged {background-image: url(./images/misflagged.png);}
+
+#info {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(1, 1fr);
+    background-color: #BDBDBD;
+    height: 3.5dvw;
+    font-size: 3dvw;
+    border: 5px black;
+    border-style: solid;
+    button {
+        font-size: 2dvw;
+        height: 2.5dvw;
+        margin-top: .5dvw;
+    }
+    line-height: 3.5dvw;
+    #lifes {
+        justify-self: center;
+    }
+    #flags {
+        justify-self: center;
+    }
+    #results {
+        justify-self: center;
+    }
+}
