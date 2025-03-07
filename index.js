@@ -32,15 +32,15 @@ function loadDivs() {
 
 function mouseDown(div, e) {
     if (e.button === 0 && div.classList.contains("unrevealed")) {
-         div.classList.add("_0");
+         div.classList.add("peaked");
     }
     else if (e.button == 1) {
         if (div.classList.contains("unrevealed")) {
-            div.classList.add("_0");
+            div.classList.add("peaked");
         }
         for (let neighbor of getNeighbors(div)) {
             if (neighbor.classList.contains("unrevealed")) {
-                neighbor.classList.add("_0");
+                neighbor.classList.add("peaked");
             }
         }
     }
@@ -64,13 +64,13 @@ function mouseUp(div, e) {
     return false;
 }
 function mouseOut(div, e) {
-    if (div.classList.contains("unrevealed") && div.classList.contains("_0")) {
-        div.classList.remove("_0");
+    if (div.classList.contains("unrevealed") && div.classList.contains("peaked")) {
+        div.classList.remove("peaked");
     }
     if (e.buttons & 4) {
         for (let neighbor of getNeighbors(div)) {
-            if (neighbor.classList.contains("unrevealed") && neighbor.classList.contains("_0")) {
-                neighbor.classList.remove("_0");
+            if (neighbor.classList.contains("unrevealed") && neighbor.classList.contains("peaked")) {
+                neighbor.classList.remove("peaked");
             }
         }
     }
@@ -79,15 +79,15 @@ function mouseOut(div, e) {
 }
 function mouseEnter(div, e) {
     if (e.buttons & 1 && div.classList.contains("unrevealed")) {
-        div.classList.add("_0");
+        div.classList.add("peaked");
     }
     else if (e.buttons & 4) {
         if (div.classList.contains("unrevealed")) {
-            div.classList.add("_0");
+            div.classList.add("peaked");
         }
         for (let neighbor of getNeighbors(div)) {
             if (neighbor.classList.contains("unrevealed")) {
-                neighbor.classList.add("_0");
+                neighbor.classList.add("peaked");
             }
         }
     }
@@ -156,9 +156,11 @@ function getNeighbors(div) {
 }
 
 function revealCell(div) {
+    div.classList.remove("peaked");
     if (div.classList.contains("unrevealed") && !div.classList.contains("flag")) {
         if (div.classList.contains("bomb")) {
             div.classList.add("boom");
+            div.innerHTML = "💥";
             flagCell(div);
             setLivesLeft(livesleft - 1);
             if (livesleft < 1) {
@@ -167,13 +169,13 @@ function revealCell(div) {
             }
         }
         else {
+            div.classList.remove("unrevealed");
             revealsleft = revealsleft - 1;
             if (revealsleft === 0) {
                 results.innerHTML = "Victory!";
                 revealAll();
             }
             else {
-                div.classList.remove("unrevealed");
                 let count = 0;
                 let flags = 0;
                 let unrevealedNeighbors = 0;
@@ -191,6 +193,9 @@ function revealCell(div) {
                 div.classList.add("_" + count);
                 if (count === 0) {
                     revealAllCells(div);
+                }
+                else {
+                    div.innerHTML = count;
                 }
                 // Death Flags
                 if (flags === count) {
@@ -239,8 +244,8 @@ function revealAllCells(div) {
             if (neighbor.classList.contains("flag")) {
                 count = count - 1;
             }
-            if (neighbor.classList.contains("unrevealed") && neighbor.classList.contains("_0")) {
-                neighbor.classList.remove("_0");
+            if (neighbor.classList.contains("unrevealed") && neighbor.classList.contains("peaked")) {
+                neighbor.classList.remove("peaked");
             }
         }
         if (count === 0) {
@@ -250,12 +255,12 @@ function revealAllCells(div) {
         }
     }
     else {
-        if (div.classList.contains("unrevealed") && div.classList.contains("_0")) {
-            div.classList.remove("_0");
+        if (div.classList.contains("unrevealed") && div.classList.contains("peaked")) {
+            div.classList.remove("peaked");
         }
         for (let neighbor of getNeighbors(div)) {
-            if (neighbor.classList.contains("unrevealed") && neighbor.classList.contains("_0")) {
-                neighbor.classList.remove("_0");
+            if (neighbor.classList.contains("unrevealed") && neighbor.classList.contains("peaked")) {
+                neighbor.classList.remove("peaked");
             }
         }
     }
@@ -265,10 +270,16 @@ function flagCell(div) {
     if (div.classList.contains("unrevealed")) {
         if (div.classList.contains("flag")) {
             div.classList.remove("flag");
+            if (!div.classList.contains("boom")) {
+                div.innerHTML = "";
+            }
             setFlagsLeft(flagsleft + 1);
         }
-        else {
+        else  {
             div.classList.add("flag");
+            if (!div.classList.contains("boom")) {
+                div.innerHTML = "🚩";
+            }
             setFlagsLeft(flagsleft - 1);
             // Death Flags
             for (let neighbor of getNeighbors(div)) {
@@ -295,13 +306,15 @@ function revealAll() {
     for (let div of document.getElementsByClassName("cell")) {
         if (div.classList.contains("flag") && !div.classList.contains("bomb")) {
             div.classList.add("misflagged");
+            div.innerHTML = "🏴‍☠️";
         }
         else if (div.classList.contains("bomb") && !div.classList.contains("boom")) {
             if (revealsleft === 0) {
                 div.classList.add("flag");
             }
-            else {
+            else if (!div.classList.contains("flag")) {
                 div.classList.remove("unrevealed");
+                div.innerHTML = "💣";
             }
         }
         else if (div.classList.contains("unrevealed")) {
@@ -313,6 +326,9 @@ function revealAll() {
             }
             div.classList.add("_" + count);
             div.classList.remove("unrevealed");
+            if (count !== 0) {
+                div.innerHTML = count;
+            }
         }
     }
 }

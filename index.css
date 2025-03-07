@@ -1,5 +1,6 @@
 html {
     user-select: none;
+    font-family: serif;
 }
 body {
     display: block;
@@ -24,22 +25,35 @@ body {
     aspect-ratio : 1 / 1;
     cursor: pointer;
     background-size: cover;
+    background-color: #BDBDBD;
+    border-style: solid;
+    border-color: #959595;
+    font-size: calc((80dvw / 30) / 2);
+    align-content: center;
+    text-align: center;
+    font-weight: 1000;
 }
 
-.bomb {background-image: url(./images/bomb.png);}
-.unrevealed {background-image: url(./images/unrevealed.png);}
-._0 {background-image: url(./images/zero.png);}
-._1 {background-image: url(./images/one.png);}
-._2 {background-image: url(./images/two.png);}
-._3 {background-image: url(./images/three.png);}
-._4 {background-image: url(./images/four.png);}
-._5 {background-image: url(./images/five.png);}
-._6 {background-image: url(./images/six.png);}
-._7 {background-image: url(./images/seven.png);}
-._8 {background-image: url(./images/eight.png);}
-.flag {background-image: url(./images/flag.png);}
-.boom {background-image: url(./images/boom.png);}
-.misflagged {background-image: url(./images/misflagged.png);}
+.unrevealed {
+    box-shadow: inset -.3dvw -.3dvw #7B7B7B, inset .3dvw .3dvw white;
+    border-style: none;
+}
+.peaked {
+    box-shadow: none;
+    border-style: solid;
+}
+.boom {
+    box-shadow: none;
+    border-style: solid;
+}
+._1 {color: blue;}
+._2 {color: green;}
+._3 {color: red;}
+._4 {color: #00007B}
+._5 {color: #7B0000}
+._6 {color: #007B7B}
+._7 {color: black;}
+._8 {color: #7B7B7B}
 
 #info {
     display: grid;
