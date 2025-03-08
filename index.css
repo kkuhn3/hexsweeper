@@ -1,6 +1,7 @@
 html {
     user-select: none;
     font-family: serif;
+    background-color: #DDE9F5;
 }
 body {
     display: block;
@@ -12,11 +13,8 @@ body {
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(30, 1fr);
-    grid-template-rows: repeat(16, 1fr);
     background-color: #ccc;
     max-width: 80dvw;
-    max-height: 99dvh;
     gap: 0;
     border: 5px black;
     border-style: solid;
@@ -59,7 +57,7 @@ body {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     grid-template-rows: repeat(1, 1fr);
-    background-color: #BDBDBD;
+    background-color: dodgerblue;
     height: 3.5dvw;
     font-size: 3dvw;
     border: 5px black;
@@ -79,4 +77,33 @@ body {
     #results {
         justify-self: center;
     }
+}
+
+#settings {
+    top: 10dvh;
+    left: 15dvw;
+    position: absolute;
+    background-color: #DDE9F5;
+    z-index: 1;
+    border: 5px black;
+    border-style: solid;
+    label {
+        padding: 5px;
+        width: 82px;
+        display: inline-block;
+    }
+    .textInput {
+        width: 30px;
+    }
+}
+#optionsHeader {
+    border-bottom: 5px black;
+    border-bottom-style: solid;
+    background-color: dodgerblue;
+    padding: 5px;
+    #closeOptions {
+        margin-left: 39px;
+    }
+    font-size: larger;
+    color: white;
 }

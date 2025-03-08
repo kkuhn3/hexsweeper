@@ -9,13 +9,46 @@
 <body>
     <div id="info">
         <div id="lifes">💖💖💖</div>
-        <button id="options" onclick="">Options</button>
+        <button id="options" onclick="toggleOptions()">Options</button>
         <div id="results"></div>
         <button id="playagain" onclick="loadDivs()">Restart</button>
         <div id="flags">🚩 99</div>
     </div>
     <div id="grid" class="grid"></div>
-
+    <div id="settings">
+        <div id="optionsHeader">
+            Options
+            <button id="closeOptions" onclick="toggleOptions()">✕</button>
+        </div>
+        <div>
+            <label for="widthSetting">Width:</label>
+            <input type="text" class="textInput" id="widthSetting" value="30"><br>
+        </div>
+        <div>
+            <label for="heightSetting">Height:</label>
+            <input type="text" class="textInput" id="heightSetting" value="16"><br>
+        </div>
+        <div>
+            <label for="bombSetting">Bombs:</label>
+            <input type="text" class="textInput" id="bombSetting" value="99"><br>
+        </div>
+        <div>
+            <label for="lifesSetting">Lifes:</label>
+            <input type="text" class="textInput" id="lifesSetting" value="3"><br>
+        </div>
+        <div>
+            <label for="deathflagsSetting">Death Flags:</label>
+            <input type="checkbox" id="deathflagsSetting" ><br>
+        </div>
+        <div>
+            <label for="cantcountSetting">Can't Count:</label>
+            <input type="checkbox"  id="cantcountSetting" ><br>
+        </div>
+        <div>
+            <label for="hexSetting">Hexes:</label>
+            <input type="checkbox"  id="hexSetting" ><br>
+        </div>
+    </div>
     <script>
         loadDivs();
     </script>

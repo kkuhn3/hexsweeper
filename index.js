@@ -1,5 +1,5 @@
-const WIDTH = 30;
-const HEIGHT = 16;
+let WIDTH = 30;
+let HEIGHT = 16;
 let GAMESTARTED = false;
 let livestotal = 3;
 let livesleft = 3;
@@ -9,37 +9,45 @@ let revealsleft = WIDTH * HEIGHT - flagsleft;
 function loadDivs() {
     GAMESTARTED = false;
     grid.innerHTML = "";
-    lifes.innerHTML = "💖💖💖";
-    flags.innerHTML = "🚩 99";
+    setLivesLeft(lifesSetting.value);
+    setFlagsLeft(bombSetting.value);
+    WIDTH = widthSetting.value;
+    HEIGHT = heightSetting.value;
+    grid.style.gridTemplateColumns = "repeat(" + WIDTH + ", 1fr)";
+    grid.style.gridTemplateRows = "repeat(" + HEIGHT + ", 1fr)";
+    revealsleft = WIDTH * HEIGHT - flagsleft;
     results.innerHTML = "";
+    settings.style.display = "none";
+
     for (let i = 0; i < HEIGHT; i++) {
         for (let j = 0; j < WIDTH; j++) {
             const div = document.createElement("div");
             div.classList.add("cell", "unrevealed");
             div.id = `cell-${j}-${i}`;
-            div.onmousedown = (e) => {mouseDown(div, e);}
-            div.onmouseup = (e) => {mouseUp(div, e);}
-            div.onmouseout = (e) => {mouseOut(div, e);}
-            div.onmouseenter = (e) => {mouseEnter(div, e);}
+            div.onmousedown = (e) => {mouseDown(div, e);};
+            div.onmouseup = (e) => {mouseUp(div, e);};
+            div.onmouseout = (e) => {mouseOut(div, e);};
+            div.onmouseenter = (e) => {mouseEnter(div, e);};
             div.oncontextmenu = (e) => {
                 e.preventDefault();
                 return false;
             };
+            div.style.fontSize = "calc((80dvw /" + WIDTH + ") / 2)";
             grid.appendChild(div);
         }
     }
 }
 
 function mouseDown(div, e) {
-    if (e.button === 0 && div.classList.contains("unrevealed")) {
+    if (e.button === 0 && div.classList.contains("unrevealed")  && !div.classList.contains("flag")) {
          div.classList.add("peaked");
     }
     else if (e.button == 1) {
-        if (div.classList.contains("unrevealed")) {
+        if (div.classList.contains("unrevealed") && !div.classList.contains("flag")) {
             div.classList.add("peaked");
         }
         for (let neighbor of getNeighbors(div)) {
-            if (neighbor.classList.contains("unrevealed")) {
+            if (neighbor.classList.contains("unrevealed") && !neighbor.classList.contains("flag")) {
                 neighbor.classList.add("peaked");
             }
         }
@@ -78,15 +86,15 @@ function mouseOut(div, e) {
     return false;
 }
 function mouseEnter(div, e) {
-    if (e.buttons & 1 && div.classList.contains("unrevealed")) {
+    if (e.buttons & 1 && div.classList.contains("unrevealed")  && !div.classList.contains("flag")) {
         div.classList.add("peaked");
     }
     else if (e.buttons & 4) {
-        if (div.classList.contains("unrevealed")) {
+        if (div.classList.contains("unrevealed") && !div.classList.contains("flag")) {
             div.classList.add("peaked");
         }
         for (let neighbor of getNeighbors(div)) {
-            if (neighbor.classList.contains("unrevealed")) {
+            if (neighbor.classList.contains("unrevealed") && !neighbor.classList.contains("flag")) {
                 neighbor.classList.add("peaked");
             }
         }
@@ -96,10 +104,6 @@ function mouseEnter(div, e) {
 }
 
 function startGame(div) {
-    setFlagsLeft(99);
-    setLivesLeft(3);
-    revealsleft = WIDTH * HEIGHT - flagsleft;
-
     const x = div.id.split("-")[1];
     const y = div.id.split("-")[2];
     GAMESTARTED = true;
@@ -169,13 +173,13 @@ function revealCell(div) {
             }
         }
         else {
-            div.classList.remove("unrevealed");
             revealsleft = revealsleft - 1;
             if (revealsleft === 0) {
                 results.innerHTML = "Victory!";
                 revealAll();
             }
             else {
+                div.classList.remove("unrevealed");
                 let count = 0;
                 let flags = 0;
                 let unrevealedNeighbors = 0;
@@ -198,32 +202,34 @@ function revealCell(div) {
                     div.innerHTML = count;
                 }
                 // Death Flags
-                if (flags === count) {
+                if (deathflagsSetting.checked && flags === count) {
                     revealAllCells(div);
                 }
                 // Can't Count
-                if (count === unrevealedNeighbors) {
-                    for (let neighbor of getNeighbors(div)) {
-                        if (neighbor.classList.contains("unrevealed") && !neighbor.classList.contains("flag")) {
-                            flagCell(neighbor);
+                if (cantcountSetting.checked) {
+                    if (count === unrevealedNeighbors) {
+                        for (let neighbor of getNeighbors(div)) {
+                            if (neighbor.classList.contains("unrevealed") && !neighbor.classList.contains("flag")) {
+                                flagCell(neighbor);
+                            }
                         }
                     }
-                }
-                for (let neighbor of getNeighbors(div)) {
-                    if (!neighbor.classList.contains("unrevealed")) {
-                        let cantCount = 0;
-                        for (let nextNeighbor of getNeighbors(neighbor)) {
-                            if (nextNeighbor.classList.contains("bomb")) {
-                                cantCount = cantCount + 1;
-                            }
-                            if (nextNeighbor.classList.contains("unrevealed")) {
-                                cantCount = cantCount - 1;
-                            }
-                        }
-                        if (cantCount === 0) {
+                    for (let neighbor of getNeighbors(div)) {
+                        if (!neighbor.classList.contains("unrevealed")) {
+                            let cantCount = 0;
                             for (let nextNeighbor of getNeighbors(neighbor)) {
-                                if (nextNeighbor.classList.contains("unrevealed") && !nextNeighbor.classList.contains("flag")) {
-                                    flagCell(nextNeighbor);
+                                if (nextNeighbor.classList.contains("bomb")) {
+                                    cantCount = cantCount + 1;
+                                }
+                                if (nextNeighbor.classList.contains("unrevealed")) {
+                                    cantCount = cantCount - 1;
+                                }
+                            }
+                            if (cantCount === 0) {
+                                for (let nextNeighbor of getNeighbors(neighbor)) {
+                                    if (nextNeighbor.classList.contains("unrevealed") && !nextNeighbor.classList.contains("flag")) {
+                                        flagCell(nextNeighbor);
+                                    }
                                 }
                             }
                         }
@@ -282,19 +288,21 @@ function flagCell(div) {
             }
             setFlagsLeft(flagsleft - 1);
             // Death Flags
-            for (let neighbor of getNeighbors(div)) {
-                if (!neighbor.classList.contains("unrevealed")) {
-                    let count = 0;
-                    for (let nextNeighbor of getNeighbors(neighbor)) {
-                        if (nextNeighbor.classList.contains("bomb")) {
-                            count = count + 1;
+            if (deathflagsSetting.checked) {
+                for (let neighbor of getNeighbors(div)) {
+                    if (!neighbor.classList.contains("unrevealed")) {
+                        let count = 0;
+                        for (let nextNeighbor of getNeighbors(neighbor)) {
+                            if (nextNeighbor.classList.contains("bomb")) {
+                                count = count + 1;
+                            }
+                            if (nextNeighbor.classList.contains("flag")) {
+                                count = count - 1;
+                            }
                         }
-                        if (nextNeighbor.classList.contains("flag")) {
-                            count = count - 1;
+                        if (count === 0) {
+                            revealAllCells(neighbor);
                         }
-                    }
-                    if (count === 0) {
-                        revealAllCells(neighbor);
                     }
                 }
             }
@@ -304,6 +312,10 @@ function flagCell(div) {
 
 function revealAll() {
     for (let div of document.getElementsByClassName("cell")) {
+        div.onmousedown = (e) => {};
+        div.onmouseup = (e) => {};
+        div.onmouseout = (e) => {};
+        div.onmouseenter = (e) => {};
         if (div.classList.contains("flag") && !div.classList.contains("bomb")) {
             div.classList.add("misflagged");
             div.innerHTML = "🏴‍☠️";
@@ -317,7 +329,7 @@ function revealAll() {
                 div.innerHTML = "💣";
             }
         }
-        else if (div.classList.contains("unrevealed")) {
+        else if (div.classList.contains("unrevealed") && !div.classList.contains("boom")) {
             let count = 0;
             for (let neighbor of getNeighbors(div)) {
                 if (neighbor.classList.contains("bomb")) {
@@ -330,5 +342,14 @@ function revealAll() {
                 div.innerHTML = count;
             }
         }
+    }
+}
+
+function toggleOptions() {
+    if (settings.style.display === "none") {
+        settings.style.display = "block";
+    }
+    else {
+        settings.style.display = "none";
     }
 }
