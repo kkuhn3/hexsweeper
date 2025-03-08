@@ -14,22 +14,25 @@ body {
 .grid {
     display: grid;
     background-color: #ccc;
-    max-width: 80dvw;
-    gap: 0;
     border: 5px black;
     border-style: solid;
 }
 .cell {
     aspect-ratio : 1 / 1;
     cursor: pointer;
-    background-size: cover;
     background-color: #BDBDBD;
     border-style: solid;
     border-color: #959595;
-    font-size: calc((80dvw / 30) / 2);
     align-content: center;
     text-align: center;
     font-weight: 1000;
+}
+.cell.hex {
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    border-style: none;
+}
+.cell.hex.odd-row {
+    transform: translateX(79%); 
 }
 
 .unrevealed {
@@ -66,6 +69,7 @@ body {
         font-size: 2dvw;
         height: 2.5dvw;
         margin-top: .5dvw;
+        cursor: pointer;
     }
     line-height: 3.5dvw;
     #lifes {
@@ -95,6 +99,9 @@ body {
     .textInput {
         width: 30px;
     }
+    input[type="checkbox"] {
+        cursor: pointer;
+    }
 }
 #optionsHeader {
     border-bottom: 5px black;
@@ -103,7 +110,9 @@ body {
     padding: 5px;
     #closeOptions {
         margin-left: 39px;
+        cursor: pointer;
     }
     font-size: larger;
     color: white;
 }
+

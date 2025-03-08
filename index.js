@@ -5,6 +5,8 @@ let livestotal = 3;
 let livesleft = 3;
 let flagsleft = 99;
 let revealsleft = WIDTH * HEIGHT - flagsleft;
+const hexratio = 1.6;
+let mode = 4;
 
 function loadDivs() {
     GAMESTARTED = false;
@@ -13,16 +15,47 @@ function loadDivs() {
     setFlagsLeft(bombSetting.value);
     WIDTH = widthSetting.value;
     HEIGHT = heightSetting.value;
-    grid.style.gridTemplateColumns = "repeat(" + WIDTH + ", 1fr)";
-    grid.style.gridTemplateRows = "repeat(" + HEIGHT + ", 1fr)";
     revealsleft = WIDTH * HEIGHT - flagsleft;
     results.innerHTML = "";
     settings.style.display = "none";
+    if (hexSetting.checked) {
+        mode = 6;
+    }
+    else {
+        mode = 4;
+    }
+
+    grid.style.gridTemplateColumns = "repeat(" + WIDTH + ", 1fr)";
+    grid.style.gridTemplateRows = "repeat(" + HEIGHT + ", 1fr)";
+    if (mode === 4) {
+        grid.style.marginLeft = "0px";
+        grid.style.marginRight = "0px";
+        grid.style.paddingRight = "0px";
+        grid.style.paddingBottom = "0px";
+    }
+    else {
+        grid.style.marginLeft = "-7.5dvw";
+        grid.style.marginRight = "-7.5dvw";
+        grid.style.paddingRight = "calc((95dvw / (" + WIDTH * hexratio * 5 + ")))";
+        grid.style.paddingBottom = "calc((95dvw / (" + WIDTH * hexratio * 2 + ")))";
+    }
 
     for (let i = 0; i < HEIGHT; i++) {
         for (let j = 0; j < WIDTH; j++) {
             const div = document.createElement("div");
             div.classList.add("cell", "unrevealed");
+            if (mode === 4) {
+                div.style.fontSize = "calc(80dvw / (2 * " + WIDTH + "))";
+            }
+            else {
+                div.classList.add("hex");
+                if (i % 2 === 1) {
+                    div.classList.add("odd-row");
+                }
+                div.style.marginBottom = "calc((95dvw / (" + WIDTH * hexratio * -2.1 + ")))";
+                div.style.width = "calc((95dvw / (" + WIDTH * hexratio + ")))";
+                div.style.fontSize = "calc(95dvw / (" + 3 * WIDTH + "))";
+            }
             div.id = `cell-${j}-${i}`;
             div.onmousedown = (e) => {mouseDown(div, e);};
             div.onmouseup = (e) => {mouseUp(div, e);};
@@ -32,7 +65,7 @@ function loadDivs() {
                 e.preventDefault();
                 return false;
             };
-            div.style.fontSize = "calc((80dvw /" + WIDTH + ") / 2)";
+            
             grid.appendChild(div);
         }
     }
@@ -104,19 +137,15 @@ function mouseEnter(div, e) {
 }
 
 function startGame(div) {
-    const x = div.id.split("-")[1];
-    const y = div.id.split("-")[2];
     GAMESTARTED = true;
     let bombs = flagsleft;
+    const neighbors = getNeighbors(div);
     while (bombs > 0) {
         const randomX = Math.floor(Math.random() * WIDTH);
         const randomY = Math.floor(Math.random() * HEIGHT);
-        if (Math.abs(randomX - x) < 2 && Math.abs(randomY - y) < 2) {
-            continue;
-        }
-        const div = document.getElementById(`cell-${randomX}-${randomY}`);
-        if (!div.classList.contains("bomb")) {
-            div.classList.add("bomb");
+        const randomDiv = document.getElementById(`cell-${randomX}-${randomY}`);
+        if (!neighbors.includes(randomDiv) && !randomDiv.classList.contains("bomb")) {
+            randomDiv.classList.add("bomb");
             bombs--;
         }
     }
@@ -147,12 +176,33 @@ function getNeighbors(div) {
     const x = parseInt(div.id.split("-")[1]);
     const y = parseInt(div.id.split("-")[2]);
     let divs = []
-    for (let i = x-1; i <= x+1; i++) {
-        for (let j = y-1; j <= y+1; j++) {
-            if ((i != x || j != y) && 
-                i >= 0 && i < WIDTH && 
-                j >= 0 && j < HEIGHT) {
-                divs.push(document.getElementById(`cell-${i}-${j}`));
+    if (mode === 4) {
+        for (let i = x-1; i <= x+1; i++) {
+            for (let j = y-1; j <= y+1; j++) {
+                if ((i != x || j != y) && 
+                    i >= 0 && i < WIDTH && 
+                    j >= 0 && j < HEIGHT) {
+                    divs.push(document.getElementById(`cell-${i}-${j}`));
+                }
+            }
+        }
+    }
+    else {
+        const isOddRow = y % 2 === 1;
+        const neighbors = [
+            [isOddRow ? 0 : -1, -1],  // top left
+            [isOddRow ? 0 : -1, 1],  // bottom left
+            [0, -2],     // top
+            [0, 2], //bottom
+            [isOddRow ? 1 : 0, -1],  // bottom left
+            [isOddRow ? 1 : 0, 1],  // bottom left
+        ];
+
+        for (const [dx, dy] of neighbors) {
+            const newX = x + dx;
+            const newY = y + dy;
+            if (newX >= 0 && newX < WIDTH && newY >= 0 && newY < HEIGHT) {
+                divs.push(document.getElementById(`cell-${newX}-${newY}`));
             }
         }
     }
