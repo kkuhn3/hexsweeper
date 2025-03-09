@@ -20,33 +20,46 @@
             Options
             <button id="closeOptions" onclick="toggleOptions()">✕</button>
         </div>
-        <div>
-            <label for="widthSetting">Width:</label>
-            <input type="text" class="textInput" id="widthSetting" value="30"><br>
+        <div class="optionsCategory">
+            <div class="title">Logistics</div>
+            <div>
+                <label for="widthSetting">Width:</label>
+                <input type="text" class="textInput" id="widthSetting" value="30"><br>
+            </div>
+            <div>
+                <label for="heightSetting">Height:</label>
+                <input type="text" class="textInput" id="heightSetting" value="16"><br>
+            </div>
+            <div>
+                <label for="bombSetting">Bombs:</label>
+                <input type="text" class="textInput" id="bombSetting" value="99"><br>
+            </div>
+            <div>
+                <label for="lifesSetting">Lifes:</label>
+                <input type="text" class="textInput" id="lifesSetting" value="3"><br>
+            </div>
         </div>
-        <div>
-            <label for="heightSetting">Height:</label>
-            <input type="text" class="textInput" id="heightSetting" value="16"><br>
+        <div class="optionsCategory">
+            <div class="title">"Quality of Life"</div>
+            <div>
+                <label for="deathflagsSetting">Death Flags:</label>
+                <input type="checkbox" id="deathflagsSetting" ><br>
+            </div>
+            <div>
+                <label for="cantcountSetting">Can't Count:</label>
+                <input type="checkbox"  id="cantcountSetting" ><br>
+            </div>
         </div>
-        <div>
-            <label for="bombSetting">Bombs:</label>
-            <input type="text" class="textInput" id="bombSetting" value="99"><br>
-        </div>
-        <div>
-            <label for="lifesSetting">Lifes:</label>
-            <input type="text" class="textInput" id="lifesSetting" value="3"><br>
-        </div>
-        <div>
-            <label for="deathflagsSetting">Death Flags:</label>
-            <input type="checkbox" id="deathflagsSetting" ><br>
-        </div>
-        <div>
-            <label for="cantcountSetting">Can't Count:</label>
-            <input type="checkbox"  id="cantcountSetting" ><br>
-        </div>
-        <div>
-            <label for="hexSetting">Hexes:</label>
-            <input type="checkbox"  id="hexSetting" ><br>
+        <div class="optionsCategory">
+            <div class="title">Shape</div>
+            <div>
+                <label for="triSetting">Triangles:</label>
+                <input type="radio"  id="triSetting" name="gridShape"><br>
+                <label for="squareSetting">Squares:</label>
+                <input type="radio"  id="squareSetting" name="gridShape" checked><br>
+                <label for="hexSetting">Hexagons:</label>
+                <input type="radio"  id="hexSetting" name="gridShape"><br>
+            </div>
         </div>
     </div>
     <script>

@@ -13,7 +13,7 @@ body {
 
 .grid {
     display: grid;
-    background-color: #ccc;
+    background-color: #959595;
     border: 5px black;
     border-style: solid;
 }
@@ -34,14 +34,29 @@ body {
 .cell.hex.odd-row {
     transform: translateX(79%); 
 }
+.cell.triangle {
+    aspect-ratio : 1.155 / 1;
+    clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+    border-style: none;
+}
+.cell.triangle.down {
+    clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+}
 
 .unrevealed {
     box-shadow: inset -.3dvw -.3dvw #7B7B7B, inset .3dvw .3dvw white;
     border-style: none;
 }
+.unrevealed.triangle {
+    box-shadow: inset -.8dvw -.8dvw #7B7B7B, inset .8dvw .8dvw white;
+}
 .peaked {
     box-shadow: none;
     border-style: solid;
+}
+.unrevealed.triangle.peaked {
+    box-shadow: none;
+    border-style: none;
 }
 .boom {
     box-shadow: none;
@@ -98,9 +113,20 @@ body {
     }
     .textInput {
         width: 30px;
+        margin-right: 5px;
     }
     input[type="checkbox"] {
         cursor: pointer;
+    }
+    .title {
+        padding: 5px;
+        font-size: larger;
+    }
+    .optionsCategory {
+        float: left;
+        border: 1px black;
+        border-style: solid;
+        height: 150px;
     }
 }
 #optionsHeader {
@@ -109,8 +135,8 @@ body {
     background-color: dodgerblue;
     padding: 5px;
     #closeOptions {
-        margin-left: 39px;
         cursor: pointer;
+        float: right;
     }
     font-size: larger;
     color: white;
