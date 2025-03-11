@@ -248,15 +248,13 @@ function revealCell(div) {
             flagCell(div);
             setLivesLeft(livesleft - 1);
             if (livesleft < 1) {
-                results.innerHTML = "Exploded!";
-                revealAll();
+                gameOver(false);
             }
         }
         else {
             revealsleft = revealsleft - 1;
             if (revealsleft === 0) {
-                results.innerHTML = "Victory!";
-                revealAll();
+                gameOver(true);
             }
             else {
                 div.classList.remove("unrevealed");
@@ -390,7 +388,15 @@ function flagCell(div) {
     }
 }
 
-function revealAll() {
+function gameOver(victory) {
+    if (victory) {
+        results.innerHTML = "Victory!";
+        sendHint();
+    }
+    else {
+        results.innerHTML = "Exploded!";
+        sendDeathlink();
+    }
     for (let div of document.getElementsByClassName("cell")) {
         div.onmousedown = (e) => {};
         div.onmouseup = (e) => {};
@@ -431,5 +437,75 @@ function toggleOptions() {
     }
     else {
         settings.style.display = "none";
+    }
+}
+
+function sendHint() {
+    if (socket && socket.readyState === WebSocket.OPEN && potentialLocs && potentialLocs.length > 0) {
+        const randomindex = Math.floor(Math.random() * potentialLocs.length);
+        const randomLoc = potentialLocs[randomindex];
+        potentialLocs.splice(randomindex, 1);
+        socket.send(`[{ 
+            "cmd": "LocationScouts", 
+            "create_as_hint": 2, 
+            "locations": [` + randomLoc + `]
+        }]`);
+    }
+    else {
+        connect(sendHint);
+    }
+}
+function sendDeathlink() {
+    if (deathlinkSetting.checked) {
+        if (socket && socket.readyState === WebSocket.OPEN) {
+            socket.send(`[{
+                "cmd": "Bounce",
+                "data": {
+                    "time": ` + Math.ceil(Date.now() / 1000) + `, 
+                    "cause": "` + nameSetting.value + ` exploded sweeping mines.", 
+                    "source": "` + nameSetting.value + `"
+                },
+                "tags": ["DeathLink"]
+            }]`);
+        }
+        else {
+            connect(sendDeathlink);
+        }
+    }
+}
+let socket;
+let potentialLocs = false;
+function connect(callback) {
+    if (nameSetting.value && portSetting.value) {
+        socket = new WebSocket("wss://archipelago.gg:" + portSetting.value);
+
+        socket.addEventListener('open', function (event) {
+            socket.send(`[{
+                "cmd" : "Connect",
+                "password" : "` + passwordSetting.value + `",
+                "game" : "",
+                "name" : "` + nameSetting.value + `",
+                "tags" : ["HintGame", "DeathLink", "Hexsweeper"],
+                "version" : {
+                    "major": 0,
+                    "minor": 5,
+                    "build": 1,
+                    "class": "Version"
+                },
+                "items_handling" : 7,
+                "uuid" : "a1c0aac5-01e5-4957-99fe-6ae9edeafa78"
+            }]`);
+        });
+
+        socket.addEventListener('message', function (event) {
+            const message = JSON.parse(event.data);
+            console.log(message);
+            for (let command of message) {
+                if (command.cmd === "Connected") {
+                    potentialLocs = command.missing_locations;
+                    callback();
+                }
+            }
+        });
     }
 }

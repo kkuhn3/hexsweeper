@@ -95,9 +95,15 @@ body {
     }
     #results {
         justify-self: center;
+        mask: linear-gradient(-60deg, #000 30%, #0005, #000 70%) right/350% 100%;
+        animation: shimmer 2.5s infinite;
     }
 }
-
+@keyframes shimmer {
+    100% {
+      mask-position: left
+    }
+  }
 #settings {
     top: 10dvh;
     left: 15dvw;
@@ -118,6 +124,9 @@ body {
     input[type="checkbox"] {
         cursor: pointer;
     }
+    input[type="radio"] {
+        cursor: pointer;
+    }
     .title {
         padding: 5px;
         font-size: larger;
@@ -127,6 +136,10 @@ body {
         border: 1px black;
         border-style: solid;
         height: 150px;
+    }
+    #archipelagoOptions {
+        border: 1px black;
+        border-style: solid;
     }
 }
 #optionsHeader {
