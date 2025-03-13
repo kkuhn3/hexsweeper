@@ -9,7 +9,9 @@ const hexratio = 1.6;
 const triangleratio = 1.155;
 let mode = 4;
 
+// Load the "unselected" grid
 function loadDivs() {
+    // Save the settings, so they don't update mid-gameplay
     GAMESTARTED = false;
     grid.innerHTML = "";
     livestotal = lifesSetting.value;
@@ -21,6 +23,7 @@ function loadDivs() {
     results.innerHTML = "";
     settings.style.display = "none";
 
+    // Different shapes (triangles, squares, hexes) need slightly different CSS to fit
     grid.style.gridTemplateColumns = "repeat(" + WIDTH + ", 1fr)";
     grid.style.gridTemplateRows = "repeat(" + HEIGHT + ", 1fr)";
     if (triSetting.checked) {
@@ -45,10 +48,12 @@ function loadDivs() {
         grid.style.paddingBottom = "0px";
     }
 
+    // Go through each row/col, add a new div for the cell.
     for (let i = 0; i < HEIGHT; i++) {
         for (let j = 0; j < WIDTH; j++) {
             const div = document.createElement("div");
             div.classList.add("cell", "unrevealed");
+            // Similar to the grid, each shape needs slightly different css
             if (mode === 3) {
                 div.classList.add("triangle");
                 if ((i % 2 === 1 && j % 2 === 0) ||
@@ -72,6 +77,7 @@ function loadDivs() {
             else {
                 div.style.fontSize = "calc(80dvw / (2 * " + WIDTH + "))";
             }
+            // Add the mouse handling
             div.id = `cell-${j}-${i}`;
             div.onmousedown = (e) => {mouseDown(div, e);};
             div.onmouseup = (e) => {mouseUp(div, e);};
@@ -87,10 +93,13 @@ function loadDivs() {
     }
 }
 
+// Called when a mouse button is pressed down
 function mouseDown(div, e) {
+    // For left click, "highlight" or "peak" the cell.
     if (e.button === 0 && div.classList.contains("unrevealed")  && !div.classList.contains("flag")) {
          div.classList.add("peaked");
     }
+    // For middle click, peak all neighboring cells and the selected cell
     else if (e.button == 1) {
         if (div.classList.contains("unrevealed") && !div.classList.contains("flag")) {
             div.classList.add("peaked");
@@ -104,26 +113,33 @@ function mouseDown(div, e) {
     e.preventDefault();
     return false;
 }
+// Called when a mous button is released
 function mouseUp(div, e) {
+    // On left click, reveal the cell, and start the game if it isn't already
     if (e.button === 0) {
         if (!GAMESTARTED) {
             startGame(div);
         }
         revealCell(div);
     }
+    // On middle click, reveal all neighboring cells
     else if (e.button == 1) {
         revealAllCells(div);
     }
+    // On right click, flag or unflag the cell
     else {
         flagCell(div);
     }
     e.preventDefault();
     return false;
 }
+// On mouse leaving a given cell
 function mouseOut(div, e) {
+    // On a left click leaving, stop peaking the cell
     if (div.classList.contains("unrevealed") && div.classList.contains("peaked")) {
         div.classList.remove("peaked");
     }
+    // On middle click leaving, stop peaking all neighboring cells.
     if (e.buttons & 4) {
         for (let neighbor of getNeighbors(div)) {
             if (neighbor.classList.contains("unrevealed") && neighbor.classList.contains("peaked")) {
@@ -134,10 +150,13 @@ function mouseOut(div, e) {
     e.preventDefault();
     return false;
 }
+// When the mouse enters a given cell, effectively a copy of `mouseDown``
 function mouseEnter(div, e) {
+    // On left click, peak that cell.
     if (e.buttons & 1 && div.classList.contains("unrevealed")  && !div.classList.contains("flag")) {
         div.classList.add("peaked");
     }
+    // On middle click, peak all neighboring cells.
     else if (e.buttons & 4) {
         if (div.classList.contains("unrevealed") && !div.classList.contains("flag")) {
             div.classList.add("peaked");
@@ -152,6 +171,7 @@ function mouseEnter(div, e) {
     return false;
 }
 
+// Start the game! Triggered on first cell click
 function startGame(div) {
     GAMESTARTED = true;
     let bombs = flagsleft;
@@ -160,12 +180,20 @@ function startGame(div) {
         const randomX = Math.floor(Math.random() * WIDTH);
         const randomY = Math.floor(Math.random() * HEIGHT);
         const randomDiv = document.getElementById(`cell-${randomX}-${randomY}`);
+        // Place all bombs randomly, except at the selected cell or it's neighbors.
+        // IE - first click always reveals a 0
         if (div != randomDiv && !neighbors.includes(randomDiv) && !randomDiv.classList.contains("bomb")) {
             randomDiv.classList.add("bomb");
             bombs--;
         }
     }
+
+    // If we don't have an archipelago socket, try to connect!
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+        connect(()=>{});
+    }
 }
+// Helper used to decrease (or increase) the lives left
 function setLivesLeft(num) {
     livesleft = num;
     lifes.innerHTML = "";
@@ -173,6 +201,7 @@ function setLivesLeft(num) {
         lifes.innerHTML += "" + livesleft + "x💖";
     }
     else {
+        // Only show up to 3 hearts on screen, for visual appeal.
         for (let i = 0; i < 3; i++) {
             if (i < livesleft) {
                 lifes.innerHTML += "💖";
@@ -183,15 +212,18 @@ function setLivesLeft(num) {
         }
     }
 }
+// Helper to decrease (or increase) the flags left.
 function setFlagsLeft(num) {
     flagsleft = num;
     flags.innerHTML = "🚩 " + flagsleft;
 }
 
+// Retrieve all neighbors of a given cell.
 function getNeighbors(div) {
     const x = parseInt(div.id.split("-")[1]);
     const y = parseInt(div.id.split("-")[2]);
     let divs = []
+    // Triangles only have 3 neighbors.
     if (mode === 3) {
         let neighbors = [
             [-1, 0],
@@ -206,6 +238,7 @@ function getNeighbors(div) {
             }
         }
     }
+    // Hexagon have 6 neighbors
     else if (mode === 6) {
         const isOddRow = y % 2 === 1;
         const neighbors = [
@@ -225,6 +258,7 @@ function getNeighbors(div) {
             }
         }
     }
+    // Squares have 8 neighbors
     else {
         for (let i = x-1; i <= x+1; i++) {
             for (let j = y-1; j <= y+1; j++) {
@@ -239,25 +273,30 @@ function getNeighbors(div) {
     return divs;
 }
 
+// Reveal the contents of a given cell, maybe exploding.
 function revealCell(div) {
     div.classList.remove("peaked");
+    // Only reveal a cell if it's not already revealed.
     if (div.classList.contains("unrevealed") && !div.classList.contains("flag")) {
+        // If we hit a bomb, we exploded! 
         if (div.classList.contains("bomb")) {
             div.classList.add("boom");
             div.innerHTML = "💥";
             flagCell(div);
             setLivesLeft(livesleft - 1);
             if (livesleft < 1) {
-                gameOver(false);
+                gameOver("Exploded!");
             }
         }
         else {
+            // If we've revealed everything that isn't a bomb, Victory!
             revealsleft = revealsleft - 1;
             if (revealsleft === 0) {
-                gameOver(true);
+                gameOver("Victory!");
             }
             else {
                 div.classList.remove("unrevealed");
+                // Count the statuses of the neighbors.
                 let count = 0;
                 let flags = 0;
                 let unrevealedNeighbors = 0;
@@ -272,6 +311,7 @@ function revealCell(div) {
                         unrevealedNeighbors = unrevealedNeighbors + 1;
                     }
                 }
+                // Set the count, if 0 reveal all neighbors
                 div.classList.add("_" + count);
                 if (count === 0) {
                     revealAllCells(div);
@@ -279,12 +319,13 @@ function revealCell(div) {
                 else {
                     div.innerHTML = count;
                 }
-                // Death Flags
+                // If deathflags, and we have the correct flag count... reveal all neighbors!
                 if (deathflagsSetting.checked && flags === count) {
                     revealAllCells(div);
                 }
-                // Can't Count
+                // If can't count mode, flag cells for the user
                 if (cantcountSetting.checked) {
+                    // If the clicked cell has a count matching its neighbors, flag them all
                     if (count === unrevealedNeighbors) {
                         for (let neighbor of getNeighbors(div)) {
                             if (neighbor.classList.contains("unrevealed") && !neighbor.classList.contains("flag")) {
@@ -292,6 +333,7 @@ function revealCell(div) {
                             }
                         }
                     }
+                    // After revealing this cell, if a neighbor now has a count matching its neighbors, flag them all
                     for (let neighbor of getNeighbors(div)) {
                         if (!neighbor.classList.contains("unrevealed")) {
                             let cantCount = 0;
@@ -318,7 +360,9 @@ function revealCell(div) {
     }
 }
 
+// Reveal all neighbors of a given cell
 function revealAllCells(div) {
+    // If the given cell is revealed, reveal it's nighbors
     if (!div.classList.contains("unrevealed")) {
         let count = 0;
         for (let neighbor of getNeighbors(div)) {
@@ -332,12 +376,14 @@ function revealAllCells(div) {
                 neighbor.classList.remove("peaked");
             }
         }
+        // if our flags match our count, reveal the neighbors
         if (count === 0) {
             for (let neighbor of getNeighbors(div)) {
                 revealCell(neighbor);
             }
         }
     }
+    // If the given cell is unrevealed, stop peaking them
     else {
         if (div.classList.contains("unrevealed") && div.classList.contains("peaked")) {
             div.classList.remove("peaked");
@@ -350,22 +396,27 @@ function revealAllCells(div) {
     }
 }
 
+// Flag or unflag a given cell
 function flagCell(div) {
+    // A revealed cell can't be flagged
     if (div.classList.contains("unrevealed")) {
+        // If already flagged, unflag it
         if (div.classList.contains("flag")) {
+            // Unless it's exploded in which case no nothing.
             if (!div.classList.contains("boom")) {
                 div.innerHTML = "";
                 div.classList.remove("flag");
                 setFlagsLeft(flagsleft + 1);
             }
         }
+        // If it's not flagged, flag it
         else  {
             div.classList.add("flag");
             if (!div.classList.contains("boom")) {
                 div.innerHTML = "🚩";
             }
             setFlagsLeft(flagsleft - 1);
-            // Death Flags
+            // If we have death flags, count judge if any neighbors can be revealed
             if (deathflagsSetting.checked) {
                 for (let neighbor of getNeighbors(div)) {
                     if (!neighbor.classList.contains("unrevealed")) {
@@ -388,33 +439,40 @@ function flagCell(div) {
     }
 }
 
+// On game completion, parameter is how the game was completed.
 function gameOver(victory) {
-    if (victory) {
-        results.innerHTML = "Victory!";
+    results.innerHTML = victory;
+    // victories get hints!
+    if (victory === "Victory!") {
         sendHint();
     }
-    else {
-        results.innerHTML = "Exploded!";
+    // Explosions send deathlinks
+    else if (victory === "Exploded!") {
         sendDeathlink();
     }
     for (let div of document.getElementsByClassName("cell")) {
+        // Remove all mouse events
         div.onmousedown = (e) => {};
         div.onmouseup = (e) => {};
         div.onmouseout = (e) => {};
         div.onmouseenter = (e) => {};
+        // Alt-flag flagged cells that were flagged in error.
         if (div.classList.contains("flag") && !div.classList.contains("bomb")) {
             div.classList.add("misflagged");
             div.innerHTML = "🏴‍☠️";
         }
+        // For all the bombs, flag them on victory and "bomb" them otherwise
         else if (div.classList.contains("bomb") && !div.classList.contains("boom")) {
             if (revealsleft === 0) {
                 div.classList.add("flag");
+                div.innerHTML = "🚩";
             }
             else if (!div.classList.contains("flag")) {
                 div.classList.remove("unrevealed");
                 div.innerHTML = "💣";
             }
         }
+        // Reveal any unrevealed cell, showing their count
         else if (div.classList.contains("unrevealed") && !div.classList.contains("boom")) {
             let count = 0;
             for (let neighbor of getNeighbors(div)) {
@@ -431,6 +489,8 @@ function gameOver(victory) {
     }
 }
 
+// on click method for "options" button. 
+// shows/hides the options
 function toggleOptions() {
     if (settings.style.display === "none") {
         settings.style.display = "block";
@@ -440,42 +500,55 @@ function toggleOptions() {
     }
 }
 
+// Send an Archipelago hint
 function sendHint() {
-    if (socket && socket.readyState === WebSocket.OPEN && potentialLocs && potentialLocs.length > 0) {
-        const randomindex = Math.floor(Math.random() * potentialLocs.length);
-        const randomLoc = potentialLocs[randomindex];
-        potentialLocs.splice(randomindex, 1);
-        socket.send(`[{ 
-            "cmd": "LocationScouts", 
-            "create_as_hint": 2, 
-            "locations": [` + randomLoc + `]
-        }]`);
+    // If the socket exists, and there is something to hint.
+    if (socket && socket.readyState === WebSocket.OPEN) {
+        if (potentialLocs && potentialLocs.length > 0) {
+            // Random location, remove it from future hints
+            const randomindex = Math.floor(Math.random() * potentialLocs.length);
+            const randomLoc = potentialLocs[randomindex];
+            potentialLocs.splice(randomindex, 1);
+            socket.send(`[{ 
+                "cmd": "LocationScouts", 
+                "create_as_hint": 2, 
+                "locations": [` + randomLoc + `]
+            }]`);
+        }
     }
+    // No socket, try to connect
     else {
         connect(sendHint);
     }
 }
+// Send an archipelago deathlink
+let lastDeath = -1;
 function sendDeathlink() {
     if (deathlinkSetting.checked) {
+        // If the socket exists
         if (socket && socket.readyState === WebSocket.OPEN) {
+            lastDeath = Math.ceil(Date.now() / 1000);
             socket.send(`[{
                 "cmd": "Bounce",
                 "data": {
-                    "time": ` + Math.ceil(Date.now() / 1000) + `, 
+                    "time": ` + lastDeath + `, 
                     "cause": "` + nameSetting.value + ` exploded sweeping mines.", 
                     "source": "` + nameSetting.value + `"
                 },
-                "tags": ["DeathLink"]
+                "tags": ["DeathLink", "Hexsweeper"]
             }]`);
         }
+        // No socket, try to connect
         else {
             connect(sendDeathlink);
         }
     }
 }
+// Connect to Archipelago
 let socket;
 let potentialLocs = false;
 function connect(callback) {
+    // Only if we have a name and port
     if (nameSetting.value && portSetting.value) {
         socket = new WebSocket("wss://archipelago.gg:" + portSetting.value);
 
@@ -501,9 +574,17 @@ function connect(callback) {
             const message = JSON.parse(event.data);
             console.log(message);
             for (let command of message) {
+                // On `Connected`, load our locations and call the callback
                 if (command.cmd === "Connected") {
                     potentialLocs = command.missing_locations;
                     callback();
+                }
+                // On `Bounced`, check if we should be Deathlinked`
+                else if (command.cmd === "Bounced") {
+                    // command.data.time !== lastDeath - feels like a bit of a hack, but allows 2 players on one slot to deathlink eachother.
+                    if (GAMESTARTED && deathlinkSetting.checked && command.tags.includes("DeathLink") && (!command.tags.includes("Hexsweeper") || command.data.time !== lastDeath)) {
+                        gameOver("DeathLinked!");
+                    }
                 }
             }
         });

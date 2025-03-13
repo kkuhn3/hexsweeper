@@ -110,16 +110,16 @@ body {
     position: absolute;
     background-color: #DDE9F5;
     z-index: 1;
-    border: 5px black;
+    border: 4px black;
     border-style: solid;
     label {
-        padding: 5px;
+        padding: 4px;
         width: 82px;
         display: inline-block;
     }
     .textInput {
         width: 30px;
-        margin-right: 5px;
+        margin-right: 4px;
     }
     input[type="checkbox"] {
         cursor: pointer;
@@ -128,7 +128,7 @@ body {
         cursor: pointer;
     }
     .title {
-        padding: 5px;
+        padding: 8px;
         font-size: larger;
     }
     .optionsCategory {
@@ -140,6 +140,9 @@ body {
     #archipelagoOptions {
         border: 1px black;
         border-style: solid;
+    }
+    a {
+        margin-left: 8px;
     }
 }
 #optionsHeader {
