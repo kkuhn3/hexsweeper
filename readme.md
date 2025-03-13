@@ -14,14 +14,14 @@ I added some additional options that I was curious about.
 
 Placed flags will automatically reveal nearby cells if the cell's count is met. For instance:
 
-\[\_\]\[\_\]\[\_\]  
-\[\_\]\[3\]\[\_\]  
-\[ :triangular_flag_on_post: \]\[ :triangular_flag_on_post: \]\[ \]
+\[\_\_\_\_\_\]\[\_\_\_\_\_\]\[\_\_\_\_\_\]  
+\[\_\_\_\_\_\]\[\_\_3\_\_\]\[\_\_\_\_\_\]  
+\[ :triangular_flag_on_post: \]\[ :triangular_flag_on_post: \]\[\_\_\_\_\_\]
 
 Placeing a Flag(:triangular_flag_on_post:) on the bottom right cell will reveal all other cells. As the "3" then has 3 flags around it. 
 
-\[0\]\[0\]\[0\]  
-\[2\]\[3\]\[2\]  
+\[\_\_0\_\_\]\[\_\_0\_\_\]\[\_\_0\_\_\]  
+\[\_\_2\_\_\]\[\_\_3\_\_\]\[\_\_2\_\_\]  
 \[ :triangular_flag_on_post: \]\[ :triangular_flag_on_post: \]\[ :triangular_flag_on_post: \]
 
 This can cause the player to explode. If this flag was misplaced, the bomb would be revealed. 
@@ -30,14 +30,14 @@ This can cause the player to explode. If this flag was misplaced, the bomb would
 
 Cells around a number will be flagged automatically if only those cells remain. For instance:
 
-\[0\]\[0\]\[0\]  
-\[2\]\[3\]\[2\]  
-\[\_\]\[\_\]\[\_\]
+\[\_\_0\_\_\]\[\_\_0\_\_\]\[\_\_0\_\_\]  
+\[\_\_2\_\_\]\[\_\_3\_\_\]\[\_\_2\_\_\]  
+\[\_\_\_\_\_\]\[\_\_\_\_\_\]\[\_\_\_\_\_\]
 
 The bottom 3 cells would all have a flag added, as the "3" has no other neighbors where those flags can be. Resulting in:
 
-\[0\]\[0\]\[0\]  
-\[2\]\[3\]\[2\]  
+\[\_\_0\_\_\]\[\_\_0\_\_\]\[\_\_0\_\_\]  
+\[\_\_2\_\_\]\[\_\_3\_\_\]\[\_\_2\_\_\]  
 \[ :triangular_flag_on_post: \]\[ :triangular_flag_on_post: \]\[ :triangular_flag_on_post: \]
 
 This cannot cause the player to explode, but may cause a chain reaction with `Death Flags`.
