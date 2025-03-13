@@ -16,13 +16,13 @@ Placed flags will automatically reveal nearby cells if the cell's count is met. 
 
 \[\_\]\[\_\]\[\_\]  
 \[\_\]\[3\]\[\_\]  
-\[:triangular_flag_on_post:\]\[:triangular_flag_on_post:\]\[ \]
+\[ :triangular_flag_on_post: \]\[ :triangular_flag_on_post: \]\[ \]
 
 Placeing a Flag(:triangular_flag_on_post:) on the bottom right cell will reveal all other cells. As the "3" then has 3 flags around it. 
 
 \[0\]\[0\]\[0\]  
 \[2\]\[3\]\[2\]  
-\[:triangular_flag_on_post:\]\[:triangular_flag_on_post:\]\[:triangular_flag_on_post:\]
+\[ :triangular_flag_on_post: \]\[ :triangular_flag_on_post: \]\[ :triangular_flag_on_post: \]
 
 This can cause the player to explode. If this flag was misplaced, the bomb would be revealed. 
 
@@ -38,7 +38,7 @@ The bottom 3 cells would all have a flag added, as the "3" has no other neighbor
 
 \[0\]\[0\]\[0\]  
 \[2\]\[3\]\[2\]  
-\[:triangular_flag_on_post:\]\[:triangular_flag_on_post:\]\[:triangular_flag_on_post:\]
+\[ :triangular_flag_on_post: \]\[ :triangular_flag_on_post: \]\[ :triangular_flag_on_post: \]
 
 This cannot cause the player to explode, but may cause a chain reaction with `Death Flags`.
 
