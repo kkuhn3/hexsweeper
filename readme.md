@@ -1,10 +1,10 @@
 # Hexsweeper
 
-An implementation of [Minesweeper](https://en.wikipedia.org/wiki/Minesweeper_(video_game)), with hexes and some personal experiements. Also hooked up to [Archipelago](https://archipelago.gg/) as a hint game.
+An implementation of [Minesweeper](https://en.wikipedia.org/wiki/Minesweeper_(video_game)), with hexes and some personal experiments. Also hooked up to [Archipelago](https://archipelago.gg/) as a hint game.
 
 ## Logistics
 
-Detirmine the counts of things in the game. Including Width, Height, Bombs, and Lifes. Yes, this implementation allows multiple lives.
+Determines the counts of things in the game. Including Width, Height, Bombs, and Lifes. Yes, this implementation allows multiple lives.
 
 ## "Quality of Life"
 
@@ -18,7 +18,7 @@ Placed flags will automatically reveal nearby cells if the cell's count is met. 
 \[\_\_\_\_\_\]\[\_\_3\_\_\]\[\_\_\_\_\_\]  
 \[ :triangular_flag_on_post: \]\[ :triangular_flag_on_post: \]\[\_\_\_\_\_\]
 
-Placeing a Flag(:triangular_flag_on_post:) on the bottom right cell will reveal all other cells. As the "3" then has 3 flags around it. 
+Placing a Flag(:triangular_flag_on_post:) on the bottom right cell will reveal all other cells. As the "3" then has 3 flags around it. 
 
 \[\_\_0\_\_\]\[\_\_0\_\_\]\[\_\_0\_\_\]  
 \[\_\_2\_\_\]\[\_\_3\_\_\]\[\_\_2\_\_\]  
@@ -44,7 +44,7 @@ This cannot cause the player to explode, but may cause a chain reaction with `De
 
 ## Shape
 
-Detiremines the shape of the cells. More neighbors is generally easier. Triangles, Squares, and Hexagons are the only `Regular` shapes that `Tessellate`. 
+Determines the shape of the cells. More neighbors is generally easier. Triangles, Squares, and Hexagons are the only `Regular` shapes that `Tessellate`. 
 
 ## Archipelago
 
@@ -62,4 +62,4 @@ Optionally, the password of the room
 
 ### DeathLink
 
-Optionally, send and recieve `DeathLink`s. This may result in the player losing due to annother game, and vice versa.
+Optionally, send and receive `DeathLink`s. This may result in the player losing due to another game, and vice versa.
