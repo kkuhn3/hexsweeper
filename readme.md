@@ -18,7 +18,7 @@ Placed flags will automatically reveal nearby cells if the cell's count is met. 
 \[\_\_\_\_\_\]\[\_\_3\_\_\]\[\_\_\_\_\_\]  
 \[ :triangular_flag_on_post: \]\[ :triangular_flag_on_post: \]\[\_\_\_\_\_\]
 
-Placing a Flag(:triangular_flag_on_post:) on the bottom right cell will reveal all other cells. As the "3" then has 3 flags around it. 
+Placing a Flag( :triangular_flag_on_post: ) on the bottom right cell will reveal all other cells. As the "3" then has 3 flags around it. 
 
 \[\_\_0\_\_\]\[\_\_0\_\_\]\[\_\_0\_\_\]  
 \[\_\_2\_\_\]\[\_\_3\_\_\]\[\_\_2\_\_\]  
@@ -48,13 +48,17 @@ Determines the shape of the cells. More neighbors is generally easier. Triangles
 
 ## Archipelago
 
-### Name
+### Hostname
 
-The slot's name.
+The hostname of the room, usually archipelago.gg.
 
 ### Port
 
 The port of the room. 
+
+### Name
+
+The slot's name.
 
 ### Password
 
@@ -62,4 +66,4 @@ Optionally, the password of the room
 
 ### DeathLink
 
-Optionally, send and receive `DeathLink`s. This may result in the player losing due to another game, and vice versa.
+Optionally, send and receive `DeathLink`s. `DeathLink`s are sent upon losing all lives, and any `DeathLink`s recived result in all lives being lost. 

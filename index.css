@@ -146,10 +146,10 @@ body {
     }
 }
 #optionsHeader {
-    border-bottom: 5px black;
+    border-bottom: 4px black;
     border-bottom-style: solid;
     background-color: dodgerblue;
-    padding: 5px;
+    padding: 4px;
     #closeOptions {
         cursor: pointer;
         float: right;
@@ -157,4 +157,6 @@ body {
     font-size: larger;
     color: white;
 }
-
+#archtext {
+    padding-bottom: 4px;
+}

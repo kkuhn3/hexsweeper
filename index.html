@@ -63,13 +63,15 @@
         </div>
         <div id="archipelagoOptions">
             <div class="title">Archipelago</div>
-            <div>
-                <label for="nameSetting">Name:</label>
-                <input type="textbox"  id="nameSetting" onchange="connect(()=>{})"><br>
+            <div id="archtext">
+                <label for="urlSetting">Hostname:</label>
+                <input type="textbox"  id="urlSetting" onchange="reconnect=true" value="archipelago.gg"><br>
                 <label for="portSetting">Port:</label>
-                <input type="textbox"  id="portSetting" onchange="connect(()=>{})"><br>
+                <input type="textbox"  id="portSetting" onchange="reconnect=true"><br>
+                <label for="nameSetting">Name:</label>
+                <input type="textbox"  id="nameSetting" onchange="reconnect=true"><br>
                 <label for="passwordSetting">Password:</label>
-                <input type="textbox"  id="passwordSetting" onchange="connect(()=>{})"><br>
+                <input type="textbox"  id="passwordSetting" onchange="reconnect=true"><br>
                 <label for="deathlinkSetting">DeathLink:</label>
                 <input type="checkbox"  id="deathlinkSetting" checked><br>
                 <a href="https://github.com/kkuhn3/hexsweeper?tab=readme-ov-file#logistics">Options Readme</a>

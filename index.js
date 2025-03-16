@@ -189,7 +189,7 @@ function startGame(div) {
     }
 
     // If we don't have an archipelago socket, try to connect!
-    if (!socket || socket.readyState !== WebSocket.OPEN) {
+    if (reconnect || !socket || socket.readyState !== WebSocket.OPEN) {
         connect(()=>{});
     }
 }
@@ -503,7 +503,7 @@ function toggleOptions() {
 // Send an Archipelago hint
 function sendHint() {
     // If the socket exists, and there is something to hint.
-    if (socket && socket.readyState === WebSocket.OPEN) {
+    if (!reconnect && socket && socket.readyState === WebSocket.OPEN) {
         if (potentialLocs && potentialLocs.length > 0) {
             // Random location, remove it from future hints
             const randomindex = Math.floor(Math.random() * potentialLocs.length);
@@ -526,7 +526,7 @@ let lastDeath = -1;
 function sendDeathlink() {
     if (deathlinkSetting.checked) {
         // If the socket exists
-        if (socket && socket.readyState === WebSocket.OPEN) {
+        if (!reconnect && socket && socket.readyState === WebSocket.OPEN) {
             lastDeath = Math.ceil(Date.now() / 1000);
             socket.send(`[{
                 "cmd": "Bounce",
@@ -547,10 +547,11 @@ function sendDeathlink() {
 // Connect to Archipelago
 let socket;
 let potentialLocs = false;
+let reconnect = true;
 function connect(callback) {
     // Only if we have a name and port
-    if (nameSetting.value && portSetting.value) {
-        socket = new WebSocket("wss://archipelago.gg:" + portSetting.value);
+    if (nameSetting.value && portSetting.value && urlSetting.value) {
+        socket = new WebSocket("wss://" + urlSetting.value + ":" + portSetting.value);
 
         socket.addEventListener('open', function (event) {
             socket.send(`[{
@@ -577,6 +578,7 @@ function connect(callback) {
                 // On `Connected`, load our locations and call the callback
                 if (command.cmd === "Connected") {
                     potentialLocs = command.missing_locations;
+                    reconnect = false;
                     callback();
                 }
                 // On `Bounced`, check if we should be Deathlinked`
