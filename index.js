@@ -120,7 +120,9 @@ function mouseUp(div, e) {
         if (!GAMESTARTED) {
             startGame(div);
         }
-        revealCell(div);
+        if (GAMESTARTED) {
+            revealCell(div);
+        }
     }
     // On middle click, reveal all neighboring cells
     else if (e.button == 1) {
@@ -173,9 +175,12 @@ function mouseEnter(div, e) {
 
 // Start the game! Triggered on first cell click
 function startGame(div) {
-    GAMESTARTED = true;
     let bombs = flagsleft;
     const neighbors = getNeighbors(div);
+    if (WIDTH * HEIGHT - neighbors.length - 1 < bombs) {
+        alert("Not enough cells to place bombs");
+        return;
+    }
     while (bombs > 0) {
         const randomX = Math.floor(Math.random() * WIDTH);
         const randomY = Math.floor(Math.random() * HEIGHT);
@@ -192,6 +197,8 @@ function startGame(div) {
     if (reconnect || !socket || socket.readyState !== WebSocket.OPEN) {
         connect(()=>{});
     }
+
+    GAMESTARTED = true;
 }
 // Helper used to decrease (or increase) the lives left
 function setLivesLeft(num) {
@@ -282,10 +289,12 @@ function revealCell(div) {
         if (div.classList.contains("bomb")) {
             div.classList.add("boom");
             div.innerHTML = "💥";
-            flagCell(div);
             setLivesLeft(livesleft - 1);
             if (livesleft < 1) {
                 gameOver("Exploded!");
+            }
+            else {
+                flagCell(div);
             }
         }
         else {
