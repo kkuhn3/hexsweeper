@@ -301,6 +301,7 @@ function revealCell(div) {
             // If we've revealed everything that isn't a bomb, Victory!
             revealsleft = revealsleft - 1;
             if (revealsleft === 0) {
+                setFlagsLeft(0);
                 gameOver("Victory!");
             }
             else {
